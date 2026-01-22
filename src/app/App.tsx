@@ -70,25 +70,17 @@ function App() {
 						minHeight: "56px",
 					}}
 				>
-					<FormControl>
-						<FormLabel id="demo-theme-toggle">Theme</FormLabel>
-						<RadioGroup
-							aria-labelledby="demo-theme-toggle"
-							name="theme-toggle"
-							row
-							value={mode}
-							onChange={(event) =>
-								setMode(event.target.value as "light" | "dark")
-							}
-						>
-							<FormControlLabel
-								value="light"
-								control={<Radio />}
-								label="Light"
-							/>
-							<FormControlLabel value="dark" control={<Radio />} label="Dark" />
-						</RadioGroup>
-					</FormControl>
+					<ToggleButtonGroup
+						aria-labelledby="demo-theme-toggle"
+						color="primary"
+						value={mode}
+						exclusive
+						onChange={(event) => setMode(event.target.value as "light" | "dark")}
+						aria-label="Platform"
+					>
+						<ToggleButton value="light">light</ToggleButton>
+						<ToggleButton value="dark">dark</ToggleButton>
+					</ToggleButtonGroup>
 				</Box>
 			</ThemeProvider>
 		</>
