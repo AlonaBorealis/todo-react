@@ -8,7 +8,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
-import { Stack, Switch, styled, useColorScheme } from "@mui/material";
+import { Stack, styled, Switch, useColorScheme } from "@mui/material";
 
 const MaterialUISwitch = styled(Switch)(({ theme }) => ({
 	width: 62,
@@ -85,23 +85,23 @@ export default function MenuAppBar() {
 
 	return (
 		<Box sx={{ flexGrow: 1 }}>
-			<AppBar position="fixed">
+			<AppBar position={"fixed"}>
 				<Toolbar>
 					<IconButton
-						size="large"
-						edge="start"
-						color="inherit"
-						aria-label="menu"
+						size={"large"}
+						edge={"start"}
+						color={"inherit"}
+						aria-label={"menu"}
 						sx={{ mr: 2 }}
 					>
 						<MenuIcon />
 					</IconButton>
 					<Stack direction={"row"} spacing={2} style={{ flexGrow: 1 }}>
-						<Typography variant="h6" component="div">
-							TODOS
+						<Typography variant={"h6"} component={"div"}>
+							{"TODOS\r"}
 						</Typography>
-						<Typography variant="h6" component="div">
-							ABOUT
+						<Typography variant={"h6"} component={"div"}>
+							{"ABOUT\r"}
 						</Typography>
 					</Stack>
 					<MaterialUISwitch
@@ -113,17 +113,17 @@ export default function MenuAppBar() {
 					{auth && (
 						<div>
 							<IconButton
-								size="large"
-								aria-label="account of current user"
-								aria-controls="menu-appbar"
-								aria-haspopup="true"
+								size={"large"}
+								aria-label={"account of current user"}
+								aria-controls={"menu-appbar"}
+								aria-haspopup={"true"}
 								onClick={handleMenu}
-								color="inherit"
+								color={"inherit"}
 							>
 								<AccountCircle />
 							</IconButton>
 							<Menu
-								id="menu-appbar"
+								id={"menu-appbar"}
 								anchorEl={anchorEl}
 								anchorOrigin={{
 									vertical: "top",
@@ -137,8 +137,8 @@ export default function MenuAppBar() {
 								open={Boolean(anchorEl)}
 								onClose={handleClose}
 							>
-								<MenuItem onClick={handleClose}>Profile</MenuItem>
-								<MenuItem onClick={handleClose}>My account</MenuItem>
+								<MenuItem onClick={handleClose}>{"Profile"}</MenuItem>
+								<MenuItem onClick={handleClose}>{"My account"}</MenuItem>
 							</Menu>
 						</div>
 					)}

@@ -1,9 +1,9 @@
-import js from "@eslint/js"
-import globals from "globals"
-import tseslint from "typescript-eslint"
-import pluginReact from "eslint-plugin-react"
-import { defineConfig } from "eslint/config"
-import eslintConfigPrettier from "eslint-config-prettier/flat"
+import js from "@eslint/js";
+import globals from "globals";
+import tseslint from "typescript-eslint";
+import pluginReact from "eslint-plugin-react";
+import { defineConfig } from "eslint/config";
+import eslintConfigPrettier from "eslint-config-prettier/flat";
 
 export default defineConfig([
 	{
@@ -11,8 +11,32 @@ export default defineConfig([
 		plugins: { js },
 		extends: ["js/recommended"],
 		languageOptions: { globals: globals.browser },
-		eslintConfigPrettier,
 	},
 	tseslint.configs.recommended,
 	pluginReact.configs.flat.recommended,
-])
+	{
+		settings: {
+			react: {
+				version: "detect",
+			},
+		},
+		rules: {
+			"react/react-in-jsx-scope": "off",
+			"react/jsx-curly-brace-presence": [
+				"error",
+				{
+					props: "always",
+					children: "always",
+				},
+			],
+			"@typescript-eslint/no-unused-vars": [
+				"error",
+				{
+					varsIgnorePattern: "^_",
+					argsIgnorePattern: "^_",
+				},
+			],
+		},
+	},
+	eslintConfigPrettier,
+]);
