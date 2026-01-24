@@ -26,7 +26,7 @@ export default defineConfig([
 				"error",
 				{
 					props: "always",
-					children: "always",
+					children: "never",
 				},
 			],
 			"@typescript-eslint/no-unused-vars": [
