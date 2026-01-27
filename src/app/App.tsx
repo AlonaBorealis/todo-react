@@ -16,9 +16,11 @@ import { AccountCircle, Lock } from "@mui/icons-material";
 import Box from "@mui/material/Box";
 import * as React from "react";
 import { type SyntheticEvent, useState } from "react";
+import { jwtDecode } from "jwt-decode";
 
 function App() {
-	const [userName, setUserName] = useState("");
+	const [user, setUser] = useState<{ access_token: string; username: string } | null>(null);
+	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [loading, setLoading] = useState(false);
 	const [loginFormName, setLoginFormName] = useState("login");
@@ -26,7 +28,7 @@ function App() {
 	const handleUserNameChange = (
 		e: SyntheticEvent<HTMLTextAreaElement | HTMLInputElement>,
 	) => {
-		setUserName(e.currentTarget.value);
+		setEmail(e.currentTarget.value);
 	};
 
 	const handlePasswordChange = (
@@ -35,11 +37,41 @@ function App() {
 		setPassword(e.currentTarget.value);
 	};
 
-	const handleLogin = () => {
+	const handleLogin = async () => {
 		setLoading(true);
-		setTimeout(() => {
+		try {
+			const loginResponse = await fetch("https://todos-be.vercel.app/auth/login", {
+				method: "POST",
+				body: JSON.stringify({ username: email, password }),
+				mode: "cors",
+				headers: { "Content-Type": "application/json" },
+			});
+			const loginData = (await loginResponse.json()) as {
+				access_token: string;
+				username: string;
+			};
+			const accessToken = loginData?.access_token;
+			console.log(jwtDecode(accessToken));
+
+			localStorage.setItem("accessToken", accessToken);
 			setLoading(false);
-		}, 2000);
+			setUser(loginData);
+		} catch (e) {
+			alert("error");
+			console.error(1);
+			setLoading(false);
+		}
+	};
+
+	const handleRegister = async () => {
+		setLoading(true);
+		await fetch("https://todos-be.vercel.app/auth/register", {
+			method: "POST",
+			body: JSON.stringify({ username: email, password }),
+			mode: "cors",
+			headers: { "Content-Type": "application/json" },
+		});
+		setLoading(false);
 	};
 
 	const handleToggleButtonChange = (
@@ -51,7 +83,7 @@ function App() {
 
 	return (
 		<>
-			<AppBar />
+			<AppBar username={user?.username} />
 
 			<Paper
 				elevation={6}
@@ -82,9 +114,8 @@ function App() {
 							<AccountCircle sx={{ color: "action.active", mr: 1, my: 0.5 }} />
 							<TextField
 								disabled={loading}
-								value={userName}
+								value={email}
 								onChange={handleUserNameChange}
-								id={"input-with-sx"}
 								label={"email"}
 								fullWidth
 								variant={"standard"}
@@ -96,7 +127,6 @@ function App() {
 								disabled={loading}
 								value={password}
 								onChange={handlePasswordChange}
-								id={"input-with-sx"}
 								label={"password"}
 								variant={"standard"}
 								type={"password"}
@@ -119,7 +149,7 @@ function App() {
 							<AccountCircle sx={{ color: "action.active", mr: 1, my: 0.5 }} />
 							<TextField
 								disabled={loading}
-								value={userName}
+								value={email}
 								onChange={handleUserNameChange}
 								id={"input-with-sx"}
 								label={"email"}
@@ -144,7 +174,7 @@ function App() {
 							fullWidth
 							loadingPosition={"end"}
 							variant={"contained"}
-							onClick={handleLogin}
+							onClick={handleRegister}
 							loading={loading}
 						>
 							{loading ? "Processing" : "Register"}
