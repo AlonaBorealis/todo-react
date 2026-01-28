@@ -57,7 +57,7 @@ function App() {
 			setLoading(false);
 			setUser(loginData);
 		} catch (e) {
-			alert("error");
+			alert("Invalid username or password");
 			console.error(1);
 			setLoading(false);
 		}
@@ -65,13 +65,59 @@ function App() {
 
 	const handleRegister = async () => {
 		setLoading(true);
-		await fetch("https://todos-be.vercel.app/auth/register", {
-			method: "POST",
-			body: JSON.stringify({ username: email, password }),
-			mode: "cors",
-			headers: { "Content-Type": "application/json" },
-		});
-		setLoading(false);
+		try {
+			const registerResponse = await fetch("https://todos-be.vercel.app/auth/register", {
+				method: "POST",
+				body: JSON.stringify({ username: email, password }),
+				mode: "cors",
+				headers: { "Content-Type": "application/json" },
+			});
+
+			if (!registerResponse.ok) {
+				const messages: Record<number, string> = {
+					400: "Неверные данные",
+					401: "Неверный логин или пароль",
+					409: "Пользователь уже существует",
+					500: "Ошибка сервера",
+				};
+				throw new Error(messages[registerResponse.status] || "Произошла ошибка");
+			}
+
+			const registerData = await registerResponse.json();
+			console.log("Регистрация успешна:", registerData);
+
+			// Автоматически логинимся после регистрации
+			const loginResponse = await fetch("https://todos-be.vercel.app/auth/login", {
+				method: "POST",
+				body: JSON.stringify({ username: email, password }),
+				mode: "cors",
+				headers: { "Content-Type": "application/json" },
+			});
+
+			if (!loginResponse.ok) {
+				throw new Error("Ошибка входа после регистрации");
+			}
+
+			const loginData = await loginResponse.json();
+
+			if (!loginData?.access_token) {
+				throw new Error("Токен не получен");
+			}
+
+			console.log(jwtDecode(loginData.access_token));
+			localStorage.setItem("accessToken", loginData.access_token);
+			setUser(loginData);
+		} catch (e) {
+			if (e instanceof Error) {
+				alert(e.message);
+				console.error("Ошибка регистрации:", e.message);
+			} else {
+				alert("Произошла неизвестная ошибка");
+				console.error("Неизвестная ошибка:", e);
+			}
+		} finally {
+			setLoading(false);
+		}
 	};
 
 	const handleToggleButtonChange = (
