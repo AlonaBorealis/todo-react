@@ -112,6 +112,7 @@ export default function MenuAppBar(props: Props) {
 					)}
 				</Toolbar>
 			</AppBar>
+			<Toolbar />
 		</Box>
 	);
 }
