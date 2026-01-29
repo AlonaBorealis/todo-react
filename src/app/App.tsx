@@ -8,9 +8,11 @@ import { useState } from "react";
 import Auth from "../entities/User/ui/Auth.tsx";
 import type { UserType } from "../entities/User/model/userType.ts";
 import Todos from "../entities/Todo/ui/Todos.tsx";
+import { autoLogin } from "../shared/util/autoLogin.ts";
 
 function App() {
-	const [user, setUser] = useState<UserType | null>(null);
+	const userFromLS = autoLogin();
+	const [user, setUser] = useState<UserType | null>(userFromLS);
 
 	return (
 		<>
