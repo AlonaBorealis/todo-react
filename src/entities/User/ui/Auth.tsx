@@ -67,55 +67,30 @@ const Auth = ({ setUser }: AuthProps) => {
 	const handleRegister = async () => {
 		setLoading(true);
 		try {
-			const registerResponse = await fetch("https://todos-be.vercel.app/auth/register", {
-				method: "POST",
-				body: JSON.stringify({ username: email, password }),
-				mode: "cors",
-				headers: { "Content-Type": "application/json" },
+			const registerData = await rootApi.post<UserType>("/auth/register", {
+				username: email,
+				password: password,
 			});
 
-			if (!registerResponse.ok) {
-				const messages: Record<number, string> = {
-					400: "Неверные данные",
-					401: "Неверный логин или пароль",
-					409: "Пользователь уже существует",
-					500: "Ошибка сервера",
-				};
-				throw new Error(messages[registerResponse.status] || "Произошла ошибка");
-			}
+			console.log("Регистрация успешна:", registerData.data);
 
-			const registerData = await registerResponse.json();
-			console.log("Регистрация успешна:", registerData);
-
-			// Автоматически логинимся после регистрации
-			const loginResponse = await fetch("https://todos-be.vercel.app/auth/login", {
-				method: "POST",
-				body: JSON.stringify({ username: email, password }),
-				mode: "cors",
-				headers: { "Content-Type": "application/json" },
+			// Автоматически логинимся после регистрации для получения токена
+			const loginData = await rootApi.post<UserType>("/auth/login", {
+				username: email,
+				password: password,
 			});
 
-			if (!loginResponse.ok) {
-				throw new Error("Ошибка входа после регистрации");
-			}
+			const accessToken = loginData.data.access_token;
+			console.warn(jwtDecode(accessToken));
 
-			const loginData = await loginResponse.json();
-
-			if (!loginData?.access_token) {
-				throw new Error("Токен не получен");
-			}
-
-			console.log(jwtDecode(loginData.access_token));
-			localStorage.setItem("accessToken", loginData.access_token);
-			setUser(loginData);
-		} catch (e) {
-			if (e instanceof Error) {
-				alert(e.message);
-				console.error("Ошибка регистрации:", e.message);
-			} else {
-				alert("Произошла неизвестная ошибка");
-				console.error("Неизвестная ошибка:", e);
-			}
+			localStorage.setItem("accessToken", accessToken);
+			setUser(loginData.data);
+			enqueueSnackbar("Registration successful!", { variant: "success" });
+		} catch (error) {
+			const axiosError = error as AxiosError<{ message: string }>;
+			enqueueSnackbar(axiosError.response?.data.message || "Registration failed", {
+				variant: "error",
+			});
 		} finally {
 			setLoading(false);
 		}
