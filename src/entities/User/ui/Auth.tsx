@@ -12,6 +12,9 @@ import * as React from "react";
 import { type Dispatch, type SetStateAction, type SyntheticEvent, useState } from "react";
 import { jwtDecode } from "jwt-decode";
 import type { UserType } from "../model/userType.ts";
+import { rootApi } from "../../../shared/api/rootApi.ts";
+import { useSnackbar } from "notistack";
+import type { AxiosError } from "axios";
 
 type AuthProps = {
 	setUser: Dispatch<SetStateAction<UserType | null>>;
@@ -22,6 +25,8 @@ const Auth = ({ setUser }: AuthProps) => {
 	const [password, setPassword] = useState("");
 	const [loading, setLoading] = useState(false);
 	const [loginFormName, setLoginFormName] = useState("login");
+
+	const { enqueueSnackbar } = useSnackbar();
 
 	const handleUserNameChange = (
 		e: SyntheticEvent<HTMLTextAreaElement | HTMLInputElement>,
@@ -38,25 +43,23 @@ const Auth = ({ setUser }: AuthProps) => {
 	const handleLogin = async () => {
 		setLoading(true);
 		try {
-			const loginResponse = await fetch("https://todos-be.vercel.app/auth/login", {
-				method: "POST",
-				body: JSON.stringify({ username: email, password }),
-				mode: "cors",
-				headers: { "Content-Type": "application/json" },
+			const loginData = await rootApi.post<UserType>("/auth/login", {
+				username: email,
+				password: password,
 			});
-			const loginData = (await loginResponse.json()) as {
-				access_token: string;
-				username: string;
-			};
-			const accessToken = loginData?.access_token;
-			console.log(jwtDecode(accessToken));
+
+			const accessToken = loginData.data.access_token;
+			console.warn(jwtDecode(accessToken));
 
 			localStorage.setItem("accessToken", accessToken);
-			setLoading(false);
-			setUser(loginData);
-		} catch (e) {
-			alert("Invalid username or password");
-			console.error(1);
+			setUser(loginData.data);
+			enqueueSnackbar("Welcome!", { variant: "success" });
+		} catch (error) {
+			const axiosError = error as AxiosError<{ message: string }>;
+			enqueueSnackbar(axiosError.response?.data.message || "Unknown error", {
+				variant: "error",
+			});
+		} finally {
 			setLoading(false);
 		}
 	};
