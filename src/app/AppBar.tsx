@@ -61,15 +61,20 @@ const MaterialUISwitch = styled(Switch)(({ theme }) => ({
 		}),
 	},
 }));
-type Props = { access_token?: string; username?: string };
+type Props = { access_token?: string; username?: string; onLogout: () => void };
 
 export default function MenuAppBar(props: Props) {
-	const { username } = props;
+	const { username, onLogout } = props;
 	const { mode, setMode } = useColorScheme();
 
 	if (!mode) {
 		return null;
 	}
+
+	const handleLogoutButton = () => {
+		localStorage.removeItem("accessToken");
+		onLogout();
+	};
 
 	return (
 		<Box sx={{ flexGrow: 1 }}>
@@ -102,16 +107,22 @@ export default function MenuAppBar(props: Props) {
 					/>
 
 					{username ? (
-						<Tooltip title={"User"}>
-							<Avatar src={""} alt={username}>
-								{username[0].toUpperCase()}
-							</Avatar>
-						</Tooltip>
+						<>
+							<Button color={"inherit"} onClick={handleLogoutButton}>
+								Logout
+							</Button>
+							<Tooltip title={"User"}>
+								<Avatar src={""} alt={username}>
+									{username[0].toUpperCase()}
+								</Avatar>
+							</Tooltip>
+						</>
 					) : (
 						<Button color={"inherit"}>Login</Button>
 					)}
 				</Toolbar>
 			</AppBar>
+			<Toolbar />
 		</Box>
 	);
 }
