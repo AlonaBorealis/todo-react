@@ -5,6 +5,7 @@ import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import { Avatar, Button, Stack, styled, Switch, Tooltip, useColorScheme } from "@mui/material";
+import { useTodosStore } from "../entities/Todo/model/store/useTodosStore.ts";
 
 const MaterialUISwitch = styled(Switch)(({ theme }) => ({
 	width: 62,
@@ -66,6 +67,8 @@ type Props = { access_token?: string; username?: string; onLogout: () => void };
 export default function MenuAppBar(props: Props) {
 	const { username, onLogout } = props;
 	const { mode, setMode } = useColorScheme();
+	const todos = useTodosStore((state) => state.todos);
+	const undoneTodos = todos.filter((todo) => !todo.completed);
 
 	if (!mode) {
 		return null;
@@ -92,7 +95,7 @@ export default function MenuAppBar(props: Props) {
 					<Stack direction={"row"} spacing={2} style={{ flexGrow: 1 }}>
 						{username && (
 							<Typography variant={"h6"} component={"div"}>
-								{"TODOS\r"}
+								{"TODOS\r"} {" " + undoneTodos.length}
 							</Typography>
 						)}
 						<Typography variant={"h6"} component={"div"}>
