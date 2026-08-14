@@ -6,6 +6,9 @@ import { defineConfig } from "eslint/config";
 import eslintConfigPrettier from "eslint-config-prettier/flat";
 
 export default defineConfig([
+	// Собранные файлы линтовать не нужно: они минифицированы, и правила
+	// для исходников дают на них тысячи ложных ошибок.
+	{ ignores: ["dist"] },
 	{
 		files: ["**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
 		plugins: { js },

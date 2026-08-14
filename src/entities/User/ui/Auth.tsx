@@ -1,10 +1,12 @@
 import {
 	Button,
+	Divider,
 	Paper,
 	Stack,
 	TextField,
 	ToggleButton,
 	ToggleButtonGroup,
+	Typography,
 } from "@mui/material";
 import Box from "@mui/material/Box";
 import { AccountCircle, Lock } from "@mui/icons-material";
@@ -101,6 +103,13 @@ const Auth = ({ setUser }: AuthProps) => {
 		newAlignment: string,
 	) => {
 		setLoginFormName(newAlignment);
+	};
+
+	// Учебный сервер, к которому обращаются формы выше, отключён вместе с курсом.
+	// Список задач живёт в собственном хранилище и без сервера работает, поэтому
+	// демо-режим просто пропускает пользователя внутрь, минуя авторизацию.
+	const handleDemoLogin = () => {
+		setUser({ username: "demo", access_token: "" });
 	};
 
 	return (
@@ -201,6 +210,18 @@ const Auth = ({ setUser }: AuthProps) => {
 						</Button>
 					</Stack>
 				)}
+
+				<Divider sx={{ mt: 4, mb: 2 }} />
+
+				<Typography variant={"body2"} color={"text.secondary"} sx={{ mb: 2 }}>
+					Учебный сервер авторизации отключён вместе с курсом, поэтому вход и
+					регистрация не сработают. Кнопка ниже открывает приложение напрямую:
+					задачи хранятся в памяти вкладки и сбрасываются при перезагрузке.
+				</Typography>
+
+				<Button fullWidth variant={"outlined"} onClick={handleDemoLogin}>
+					Войти в демо-режиме
+				</Button>
 			</Paper>
 		</div>
 	);
